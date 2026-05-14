@@ -1,5 +1,29 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
+
+const dashboardItems = [
+  {
+    title: "Saved destinations",
+    description: "View places you bookmarked for future trips.",
+    href: "/dashboard/saved-destinations",
+  },
+  {
+    title: "Travel plans",
+    description: "Saved AI itineraries will appear here.",
+    href: "/dashboard/travel-plans",
+  },
+  {
+    title: "My reviews",
+    description: "Track your submitted reviews and approval status.",
+    href: "/dashboard/reviews",
+  },
+  {
+    title: "Suggest destination",
+    description: "Suggest new Nepal destinations for admin review.",
+    href: "/dashboard/suggest-destination",
+  },
+];
 
 export default async function DashboardPage() {
   const session = await getCurrentUser();
@@ -22,14 +46,16 @@ export default async function DashboardPage() {
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {["Saved destinations", "Travel plans", "My reviews", "Suggest destination"].map(
-          (item) => (
-            <section key={item} className="rounded-xl border border-slate-200 bg-white p-5">
-              <h2 className="font-semibold text-slate-950">{item}</h2>
-              <p className="mt-2 text-sm text-slate-600">Coming in the dashboard step.</p>
-            </section>
-          ),
-        )}
+        {dashboardItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-sm"
+          >
+            <h2 className="font-semibold text-slate-950">{item.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+          </Link>
+        ))}
       </div>
     </main>
   );

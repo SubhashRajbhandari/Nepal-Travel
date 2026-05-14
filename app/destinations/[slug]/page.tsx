@@ -10,8 +10,12 @@ import {
   Utensils,
   WalletCards,
 } from "lucide-react";
+import { BookmarkButton } from "@/components/destination/BookmarkButton";
+import { ReviewForm } from "@/components/destination/ReviewForm";
+import { getCurrentUser } from "@/lib/auth";
 import { getDestinationBySlug } from "@/lib/destinations";
 import { formatDifficulty, formatNepaliCurrency } from "@/lib/format";
+import { prisma } from "@/lib/prisma";
 
 type DestinationDetailPageProps = {
   params: Promise<{
@@ -23,11 +27,26 @@ export default async function DestinationDetailPage({
   params,
 }: DestinationDetailPageProps) {
   const { slug } = await params;
-  const destination = await getDestinationBySlug(slug);
+  const [destination, session] = await Promise.all([
+    getDestinationBySlug(slug),
+    getCurrentUser(),
+  ]);
 
   if (!destination) {
     notFound();
   }
+
+  const bookmark = session?.user
+    ? await prisma.bookmark.findUnique({
+        where: {
+          userId_destinationId: {
+            userId: session.user.id,
+            destinationId: destination.id,
+          },
+        },
+        select: { id: true },
+      })
+    : null;
 
   return (
     <main className="flex-1 bg-white">
@@ -98,8 +117,10 @@ export default async function DestinationDetailPage({
           </DetailSection>
 
           <DetailSection title="Reviews">
+            <ReviewForm destinationId={destination.id} isLoggedIn={Boolean(session?.user)} />
+
             {destination.reviews.length ? (
-              <div className="space-y-4">
+              <div className="mt-5 space-y-4">
                 {destination.reviews.map((review) => (
                   <article key={review.id} className="rounded-xl border border-slate-200 p-5">
                     <div className="flex items-center justify-between gap-4">
@@ -122,6 +143,13 @@ export default async function DestinationDetailPage({
 
         <aside className="h-fit rounded-xl border border-slate-200 bg-slate-50 p-5">
           <h2 className="text-lg font-bold text-slate-950">Trip snapshot</h2>
+          <div className="mt-5">
+            <BookmarkButton
+              destinationId={destination.id}
+              isBookmarked={Boolean(bookmark)}
+              isLoggedIn={Boolean(session?.user)}
+            />
+          </div>
           <dl className="mt-5 space-y-4 text-sm">
             <div>
               <dt className="font-semibold text-slate-500">Difficulty</dt>
