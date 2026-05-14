@@ -1,0 +1,219 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  BLOCKED
+}
+
+enum Difficulty {
+  EASY
+  MODERATE
+  HARD
+  EXTREME
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SuggestionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ReportType {
+  USER_ACTIVITY
+  POPULAR_DESTINATIONS
+  REVIEWS_FEEDBACK
+  BOOKMARKS
+}
+
+model User {
+  id           String       @id @default(cuid())
+  name         String
+  email        String       @unique
+  phone        String?
+  passwordHash String
+  role         Role         @default(USER)
+  status       UserStatus   @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  bookmarks     Bookmark[]
+  itineraries   Itinerary[]
+  notifications Notification[]
+  recommendations Recommendation[]
+  reviews       Review[]
+  suggestions   DestinationSuggestion[]
+}
+
+model Category {
+  id          String        @id @default(cuid())
+  name        String        @unique
+  slug        String        @unique
+  description String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  destinations Destination[]
+}
+
+model Destination {
+  id              String     @id @default(cuid())
+  name            String
+  slug            String     @unique
+  description     String
+  location        String
+  mapLink         String?
+  latitude        Float?
+  longitude       Float?
+  imageUrls       String[]
+  estimatedBudget Int
+  bestTimeToVisit String
+  duration        String
+  difficulty      Difficulty
+  localFood       String[]
+  nearbyAttractions String[]
+  transportation  String
+  safetyTips      String[]
+  averageRating   Float      @default(0)
+  reviewCount     Int        @default(0)
+  isFeatured      Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  bookmarks       Bookmark[]
+  itineraries     Itinerary[]
+  recommendations Recommendation[]
+  reviews         Review[]
+
+  @@index([categoryId])
+  @@index([difficulty])
+  @@index([location])
+}
+
+model Review {
+  id                 String       @id @default(cuid())
+  rating             Int
+  remark             String
+  difficultyFeedback Difficulty?
+  status             ReviewStatus @default(PENDING)
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  destinationId String
+  userId        String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, destinationId])
+  @@index([destinationId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  destinationId String
+  userId        String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, destinationId])
+}
+
+model Itinerary {
+  id          String     @id @default(cuid())
+  title       String
+  duration    String
+  budget      Int
+  travelStyle String
+  difficulty  Difficulty
+  planJson    Json
+  budgetJson  Json
+  summary     String
+  aiProvider  String     @default("fallback")
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  destinationId String
+  userId        String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([destinationId])
+}
+
+model Recommendation {
+  id              String   @id @default(cuid())
+  preferencesJson Json
+  reason          String
+  createdAt       DateTime @default(now())
+
+  destinationId String
+  userId        String
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model DestinationSuggestion {
+  id              String           @id @default(cuid())
+  name            String
+  categoryName    String
+  location        String
+  description     String
+  estimatedBudget Int?
+  bestTimeToVisit String?
+  difficulty      Difficulty?
+  status          SuggestionStatus @default(PENDING)
+  adminNote       String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+}
+
+model ReportSnapshot {
+  id        String     @id @default(cuid())
+  type      ReportType
+  dataJson  Json
+  createdAt DateTime   @default(now())
+}
