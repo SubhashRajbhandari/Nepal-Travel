@@ -35,6 +35,10 @@ Update `.env` with your real database credentials:
 
 ```env
 DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/nepal_travel_app?schema=public"
+POSTGRES_USER="postgres"
+POSTGRES_PASSWORD="replace-with-your-local-password"
+POSTGRES_DB="nepal_travel_app"
+POSTGRES_PORT="5432"
 NEXTAUTH_URL="http://localhost:3000"
 NEXTAUTH_SECRET="replace-with-a-long-random-secret"
 AI_API_KEY=""
@@ -42,6 +46,21 @@ AI_MODEL="gpt-4o-mini"
 ```
 
 If `AI_API_KEY` is empty, the app will use fallback itinerary and budget logic instead of calling an AI service.
+
+## Docker PostgreSQL
+
+If Docker Desktop is installed and the Docker CLI is available, start PostgreSQL with:
+
+```bash
+docker compose up -d
+```
+
+Then run:
+
+```bash
+npm run db:migrate -- --name init
+npm run db:seed
+```
 
 ## Database
 
