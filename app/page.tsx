@@ -42,16 +42,16 @@ export default function Home() {
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/signup"
+                href="/destinations"
                 className="rounded-lg bg-emerald-700 px-5 py-3 text-center font-semibold text-white transition hover:bg-emerald-800"
               >
-                Create account
+                Explore destinations
               </Link>
               <Link
-                href="/login"
+                href="/signup"
                 className="rounded-lg border border-slate-300 px-5 py-3 text-center font-semibold text-slate-800 transition hover:border-emerald-700 hover:text-emerald-800"
               >
-                Login
+                Create account
               </Link>
             </div>
           </div>

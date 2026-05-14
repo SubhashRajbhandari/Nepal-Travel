@@ -16,6 +16,12 @@ export async function Navbar() {
           <Link className="font-medium text-slate-700 hover:text-emerald-800" href="/">
             Home
           </Link>
+          <Link
+            className="font-medium text-slate-700 hover:text-emerald-800"
+            href="/destinations"
+          >
+            Destinations
+          </Link>
           {session?.user ? (
             <>
               <Link
