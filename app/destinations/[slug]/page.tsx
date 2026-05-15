@@ -10,6 +10,7 @@ import {
   Utensils,
   WalletCards,
 } from "lucide-react";
+import { AITripPlanner } from "@/components/ai/AITripPlanner";
 import { BookmarkButton } from "@/components/destination/BookmarkButton";
 import { ReviewForm } from "@/components/destination/ReviewForm";
 import { getCurrentUser } from "@/lib/auth";
@@ -141,38 +142,52 @@ export default async function DestinationDetailPage({
           </DetailSection>
         </div>
 
-        <aside className="h-fit rounded-xl border border-slate-200 bg-slate-50 p-5">
-          <h2 className="text-lg font-bold text-slate-950">Trip snapshot</h2>
-          <div className="mt-5">
-            <BookmarkButton
+        <div className="space-y-5">
+          <aside className="h-fit rounded-xl border border-slate-200 bg-slate-50 p-5">
+            <h2 className="text-lg font-bold text-slate-950">Trip snapshot</h2>
+            <div className="mt-5">
+              <BookmarkButton
+                destinationId={destination.id}
+                isBookmarked={Boolean(bookmark)}
+                isLoggedIn={Boolean(session?.user)}
+              />
+            </div>
+            <dl className="mt-5 space-y-4 text-sm">
+              <div>
+                <dt className="font-semibold text-slate-500">Difficulty</dt>
+                <dd className="mt-1 text-slate-950">
+                  {formatDifficulty(destination.difficulty)}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-slate-500">Category</dt>
+                <dd className="mt-1 text-slate-950">{destination.category.name}</dd>
+              </div>
+              <div>
+                <dt className="font-semibold text-slate-500">Map</dt>
+                <dd className="mt-1">
+                  {destination.mapLink ? (
+                    <a className="font-semibold text-emerald-700" href={destination.mapLink}>
+                      Open map
+                    </a>
+                  ) : (
+                    <span className="text-slate-600">Map link will be added by admin.</span>
+                  )}
+                </dd>
+              </div>
+            </dl>
+          </aside>
+
+          <div>
+            <AITripPlanner
               destinationId={destination.id}
-              isBookmarked={Boolean(bookmark)}
+              defaultDuration={destination.duration}
+              defaultBudget={destination.estimatedBudget}
+              defaultDifficulty={destination.difficulty}
               isLoggedIn={Boolean(session?.user)}
             />
           </div>
-          <dl className="mt-5 space-y-4 text-sm">
-            <div>
-              <dt className="font-semibold text-slate-500">Difficulty</dt>
-              <dd className="mt-1 text-slate-950">{formatDifficulty(destination.difficulty)}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-slate-500">Category</dt>
-              <dd className="mt-1 text-slate-950">{destination.category.name}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-slate-500">Map</dt>
-              <dd className="mt-1">
-                {destination.mapLink ? (
-                  <a className="font-semibold text-emerald-700" href={destination.mapLink}>
-                    Open map
-                  </a>
-                ) : (
-                  <span className="text-slate-600">Map link will be added by admin.</span>
-                )}
-              </dd>
-            </div>
-          </dl>
-        </aside>
+        </div>
       </section>
     </main>
   );

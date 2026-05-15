@@ -88,6 +88,17 @@ Password: admin12345
 
 Change this password before using the app outside local development.
 
+## AI Planner
+
+The app includes AI-ready endpoints for itinerary and budget generation:
+
+```txt
+POST /api/ai/itinerary
+POST /api/ai/budget
+```
+
+Generated itineraries are saved to the `Itinerary` table and appear in the user dashboard. If `AI_API_KEY` is empty, the server uses structured fallback logic so the feature still works during local demos.
+
 ## Useful Commands
 
 ```bash
