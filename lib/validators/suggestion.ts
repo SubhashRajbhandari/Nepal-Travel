@@ -8,7 +8,7 @@ export const destinationSuggestionSchema = z.object({
   description: z.string().trim().min(20, "Description must be at least 20 characters."),
   estimatedBudget: z.preprocess(
     (value) => (value === "" ? undefined : value),
-    z.coerce.number().int().min(0).optional(),
+    z.coerce.number().int().min(0, "Estimated budget cannot be negative.").optional(),
   ),
   bestTimeToVisit: z.string().trim().optional(),
   difficulty: z

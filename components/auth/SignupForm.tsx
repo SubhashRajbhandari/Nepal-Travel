@@ -18,6 +18,13 @@ export function SignupForm() {
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "");
     const password = String(formData.get("password") ?? "");
+    const confirmPassword = String(formData.get("confirmPassword") ?? "");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setIsSubmitting(false);
+      return;
+    }
 
     const response = await fetch("/api/auth/register", {
       method: "POST",
@@ -27,6 +34,7 @@ export function SignupForm() {
         email,
         phone: formData.get("phone"),
         password,
+        confirmPassword,
       }),
     });
 
@@ -115,8 +123,25 @@ export function SignupForm() {
           autoComplete="new-password"
           required
           minLength={8}
+          pattern="(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{8,}"
           className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
-          placeholder="At least 8 characters"
+          placeholder="Capital letter, number, and symbol"
+        />
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-slate-700" htmlFor="confirmPassword">
+          Confirm password
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-950 outline-none transition focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
+          placeholder="Re-enter your password"
         />
       </div>
 

@@ -92,7 +92,7 @@ export function DestinationForm({ categories }: DestinationFormProps) {
             ))}
           </select>
         </label>
-        <TextField name="estimatedBudget" label="Estimated budget NPR" type="number" required />
+        <TextField name="estimatedBudget" label="Estimated budget NPR" type="number" min={0} required />
         <TextField name="duration" label="Duration" required />
         <TextField name="bestTimeToVisit" label="Best time to visit" required />
         <TextField name="mapLink" label="Map link" />
@@ -127,11 +127,13 @@ function TextField({
   label,
   type = "text",
   required = false,
+  min,
 }: {
   name: string;
   label: string;
   type?: string;
   required?: boolean;
+  min?: number;
 }) {
   return (
     <label>
@@ -140,6 +142,7 @@ function TextField({
         name={name}
         type={type}
         required={required}
+        min={min}
         className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
       />
     </label>

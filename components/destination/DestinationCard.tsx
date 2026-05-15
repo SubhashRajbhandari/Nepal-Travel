@@ -1,6 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Clock, MapPin, WalletCards } from "lucide-react";
 import type { Difficulty } from "@/lib/generated/prisma/client";
+import { getDestinationImage } from "@/lib/destination-images";
 import { formatDifficulty, formatNepaliCurrency } from "@/lib/format";
 
 type DestinationCardProps = {
@@ -13,6 +15,7 @@ type DestinationCardProps = {
     difficulty: Difficulty;
     estimatedBudget: number;
     averageRating: number;
+    imageUrls: string[];
     category: {
       name: string;
     };
@@ -20,9 +23,20 @@ type DestinationCardProps = {
 };
 
 export function DestinationCard({ destination }: DestinationCardProps) {
+  const imageUrl = getDestinationImage(destination.slug, destination.imageUrls);
+
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-      <div className="h-36 bg-[linear-gradient(135deg,#047857,#0f766e_45%,#f59e0b)]" />
+    <article className="flex h-full flex-col overflow-hidden rounded-xl border border-emerald-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-xl">
+      <div className="relative h-44 overflow-hidden">
+        <Image
+          src={imageUrl}
+          alt={destination.name}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition duration-500 hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 to-transparent" />
+      </div>
       <div className="flex flex-1 flex-col p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -59,7 +73,7 @@ export function DestinationCard({ destination }: DestinationCardProps) {
 
         <Link
           href={`/destinations/${destination.slug}`}
-          className="mt-6 rounded-lg bg-slate-950 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-emerald-800"
+          className="mt-6 rounded-lg bg-emerald-700 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-emerald-800"
         >
           View details
         </Link>

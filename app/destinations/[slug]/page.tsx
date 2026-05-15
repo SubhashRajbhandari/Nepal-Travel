@@ -14,6 +14,7 @@ import { AITripPlanner } from "@/components/ai/AITripPlanner";
 import { BookmarkButton } from "@/components/destination/BookmarkButton";
 import { ReviewForm } from "@/components/destination/ReviewForm";
 import { getCurrentUser } from "@/lib/auth";
+import { getDestinationImage } from "@/lib/destination-images";
 import { getDestinationBySlug } from "@/lib/destinations";
 import { formatDifficulty, formatNepaliCurrency } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
@@ -37,6 +38,8 @@ export default async function DestinationDetailPage({
     notFound();
   }
 
+  const imageUrl = getDestinationImage(destination.slug, destination.imageUrls);
+
   const bookmark = session?.user
     ? await prisma.bookmark.findUnique({
         where: {
@@ -50,9 +53,16 @@ export default async function DestinationDetailPage({
     : null;
 
   return (
-    <main className="flex-1 bg-white">
-      <section className="bg-slate-950 text-white">
-        <div className="mx-auto max-w-6xl px-5 py-12">
+    <main className="flex-1 bg-[#f6f8f3]">
+      <section
+        className="relative overflow-hidden bg-slate-950 text-white"
+        style={{
+          backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.9), rgba(15,23,42,0.62), rgba(15,23,42,0.18)), url(${imageUrl})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }}
+      >
+        <div className="mx-auto max-w-6xl px-5 py-16">
           <Link href="/destinations" className="text-sm font-semibold text-emerald-300">
             Back to destinations
           </Link>

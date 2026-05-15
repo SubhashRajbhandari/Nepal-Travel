@@ -27,6 +27,14 @@ export function SuggestionForm() {
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
+    const estimatedBudget = Number(formData.get("estimatedBudget") || 0);
+
+    if (estimatedBudget < 0) {
+      setError("Estimated budget cannot be negative.");
+      setIsSubmitting(false);
+      return;
+    }
+
     const response = await fetch("/api/suggestions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -87,7 +95,7 @@ export function SuggestionForm() {
             ))}
           </select>
         </label>
-        <TextField name="estimatedBudget" label="Estimated budget NPR" type="number" />
+        <TextField name="estimatedBudget" label="Estimated budget NPR" type="number" min={0} />
         <TextField name="bestTimeToVisit" label="Best time to visit" />
       </div>
 
@@ -130,11 +138,13 @@ function TextField({
   label,
   type = "text",
   required = false,
+  min,
 }: {
   name: string;
   label: string;
   type?: string;
   required?: boolean;
+  min?: number;
 }) {
   return (
     <label>
@@ -143,6 +153,7 @@ function TextField({
         name={name}
         type={type}
         required={required}
+        min={min}
         className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
       />
     </label>
