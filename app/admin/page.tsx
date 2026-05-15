@@ -1,5 +1,15 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
+
+const adminItems = [
+  { title: "Destinations", href: "/admin/destinations", description: "Add and edit destination data." },
+  { title: "Categories", href: "/admin/categories", description: "Manage destination categories." },
+  { title: "Users", href: "/admin/users", description: "Review registered users." },
+  { title: "Reviews", href: "/admin/reviews", description: "Approve or reject user reviews." },
+  { title: "Suggestions", href: "/admin/suggestions", description: "Review suggested destinations." },
+  { title: "Reports", href: "/admin/reports", description: "View project activity summaries." },
+];
 
 export default async function AdminPage() {
   const session = await getCurrentUser();
@@ -26,14 +36,16 @@ export default async function AdminPage() {
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {["Destinations", "Categories", "Users", "Reviews", "Suggestions", "Reports"].map(
-          (item) => (
-            <section key={item} className="rounded-xl border border-slate-200 bg-white p-5">
-              <h2 className="font-semibold text-slate-950">{item}</h2>
-              <p className="mt-2 text-sm text-slate-600">Admin module coming soon.</p>
-            </section>
-          ),
-        )}
+        {adminItems.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="rounded-xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-sm"
+          >
+            <h2 className="font-semibold text-slate-950">{item.title}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{item.description}</p>
+          </Link>
+        ))}
       </div>
     </main>
   );
