@@ -23,6 +23,11 @@ const dashboardItems = [
     description: "Suggest new Nepal destinations for admin review.",
     href: "/dashboard/suggest-destination",
   },
+  {
+    title: "Profile",
+    description: "Edit your account details and view activity counts.",
+    href: "/dashboard/profile",
+  },
 ];
 
 export default async function DashboardPage() {

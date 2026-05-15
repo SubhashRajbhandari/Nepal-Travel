@@ -22,6 +22,12 @@ export async function Navbar() {
           >
             Destinations
           </Link>
+          <Link
+            className="font-medium text-slate-700 hover:text-emerald-800"
+            href="/about"
+          >
+            About
+          </Link>
           {session?.user ? (
             <>
               <Link
