@@ -26,7 +26,7 @@ const pexelsImageBySlug: Record<string, string> = {
 };
 
 export const homeHeroImage =
-  "https://images.pexels.com/photos/30495788/pexels-photo-30495788.jpeg?auto=compress&cs=tinysrgb&w=1800";
+  "https://images.pexels.com/photos/29269990/pexels-photo-29269990.jpeg?auto=compress&cs=tinysrgb&w=1800";
 
 export function getDestinationImage(slug: string, imageUrls: string[] = []) {
   const uploadedImage = imageUrls.find((imageUrl) => imageUrl.startsWith("http"));
