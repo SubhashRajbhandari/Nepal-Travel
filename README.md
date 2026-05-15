@@ -26,7 +26,7 @@ npm run dev
 On Windows PowerShell, use `npm.cmd` if scripts are blocked by execution policy:
 
 ```powershell
-& "C:\Program Files\nodejs\npm.cmd" run dev
+& npm run dev
 ```
 
 ## Environment Variables
