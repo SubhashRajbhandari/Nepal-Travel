@@ -28,7 +28,8 @@ export function ReviewForm({ destinationId, isLoggedIn }: ReviewFormProps) {
     }
 
     setIsSubmitting(true);
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
     const response = await fetch("/api/reviews", {
       method: "POST",
@@ -51,7 +52,7 @@ export function ReviewForm({ destinationId, isLoggedIn }: ReviewFormProps) {
       return;
     }
 
-    event.currentTarget.reset();
+    form.reset();
     setMessage("Review submitted. Admin approval is required before it appears publicly.");
     router.refresh();
   }
