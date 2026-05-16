@@ -14,19 +14,37 @@ A full-stack Next.js project for discovering Nepal travel destinations, planning
 
 ## Local Setup
 
+Minimal Setup:
+
+```bash
+# 1. Reinstall dependencies (postinstall runs `prisma generate` automatically)
+npm install
+
+# 2. Start a fresh postgres container
+docker compose up -d
+
+# 3. Wait until the container reports "healthy"
+docker compose ps
+
+# 4. Apply migrations against the empty DB
+npx prisma migrate deploy
+
+# 5. Seed the database (admin@nepaltravel.test / admin12345 + destinations)
+npm run db:seed
+
+# 6. Start the dev server
+npm run dev
+```
+
+Full Commands:
+
 ```bash
 npm install
-cp .env.example .env
+cp .env.example .env (You can directly copy the .env.example and rename it to .env)
 npm run db:generate
 npm run db:migrate -- --name init
 npm run db:seed
 npm run dev
-```
-
-On Windows PowerShell, use `npm.cmd` if scripts are blocked by execution policy:
-
-```powershell
-& npm run dev
 ```
 
 ## Environment Variables
