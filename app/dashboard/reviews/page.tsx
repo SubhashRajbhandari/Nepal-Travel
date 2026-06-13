@@ -62,7 +62,7 @@ export default async function MyReviewsPage() {
                 </div>
                 <span
                   className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-                    statusStyles[review.status]
+                    statusStyles[review.status as keyof typeof statusStyles]
                   }`}
                 >
                   {formatDifficulty(review.status)}

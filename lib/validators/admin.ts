@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Difficulty } from "@/lib/generated/prisma/client";
+import { Difficulty } from "@/lib/types";
 
 export const userStatusSchema = z.object({
   status: z.enum(["ACTIVE", "PENDING", "BLOCKED"]),

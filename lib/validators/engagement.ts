@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Difficulty } from "@/lib/generated/prisma/client";
+import { Difficulty } from "@/lib/types";
 
 export const bookmarkSchema = z.object({
   destinationId: z.string().min(1, "Destination is required."),

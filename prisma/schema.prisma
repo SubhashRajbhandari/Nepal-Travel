@@ -4,44 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-}
-
-enum Role {
-  USER
-  ADMIN
-}
-
-enum UserStatus {
-  ACTIVE
-  PENDING
-  BLOCKED
-}
-
-enum Difficulty {
-  EASY
-  MODERATE
-  HARD
-  EXTREME
-}
-
-enum ReviewStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum SuggestionStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum ReportType {
-  USER_ACTIVITY
-  POPULAR_DESTINATIONS
-  REVIEWS_FEEDBACK
-  BOOKMARKS
+  provider = "sqlite"
 }
 
 model User {
@@ -50,17 +13,17 @@ model User {
   email        String       @unique
   phone        String?
   passwordHash String
-  role         Role         @default(USER)
-  status       UserStatus   @default(ACTIVE)
+  role         String       @default("USER")
+  status       String       @default("ACTIVE")
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
 
-  bookmarks     Bookmark[]
-  itineraries   Itinerary[]
-  notifications Notification[]
+  bookmarks       Bookmark[]
+  itineraries     Itinerary[]
+  notifications   Notification[]
   recommendations Recommendation[]
-  reviews       Review[]
-  suggestions   DestinationSuggestion[]
+  reviews         Review[]
+  suggestions     DestinationSuggestion[]
 }
 
 model Category {
@@ -83,15 +46,15 @@ model Destination {
   mapLink         String?
   latitude        Float?
   longitude       Float?
-  imageUrls       String[]
+  imageUrls       String     @default("[]")
   estimatedBudget Int
   bestTimeToVisit String
   duration        String
-  difficulty      Difficulty
-  localFood       String[]
-  nearbyAttractions String[]
+  difficulty      String
+  localFood       String     @default("[]")
+  nearbyAttractions String   @default("[]")
   transportation  String
-  safetyTips      String[]
+  safetyTips      String     @default("[]")
   averageRating   Float      @default(0)
   reviewCount     Int        @default(0)
   isFeatured      Boolean    @default(false)
@@ -115,8 +78,8 @@ model Review {
   id                 String       @id @default(cuid())
   rating             Int
   remark             String
-  difficultyFeedback Difficulty?
-  status             ReviewStatus @default(PENDING)
+  difficultyFeedback String?
+  status             String       @default("PENDING")
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
 
@@ -147,9 +110,9 @@ model Itinerary {
   duration    String
   budget      Int
   travelStyle String
-  difficulty  Difficulty
-  planJson    Json
-  budgetJson  Json
+  difficulty  String
+  planJson    String
+  budgetJson  String
   summary     String
   aiProvider  String     @default("fallback")
   createdAt   DateTime   @default(now())
@@ -166,7 +129,7 @@ model Itinerary {
 
 model Recommendation {
   id              String   @id @default(cuid())
-  preferencesJson Json
+  preferencesJson String
   reason          String
   createdAt       DateTime @default(now())
 
@@ -186,8 +149,8 @@ model DestinationSuggestion {
   description     String
   estimatedBudget Int?
   bestTimeToVisit String?
-  difficulty      Difficulty?
-  status          SuggestionStatus @default(PENDING)
+  difficulty      String?
+  status          String           @default("PENDING")
   adminNote       String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -213,7 +176,7 @@ model Notification {
 
 model ReportSnapshot {
   id        String     @id @default(cuid())
-  type      ReportType
-  dataJson  Json
+  type      String
+  dataJson  String
   createdAt DateTime   @default(now())
 }

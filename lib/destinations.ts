@@ -1,5 +1,7 @@
-import { Difficulty, Prisma } from "@/lib/generated/prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { Difficulty } from "@/lib/types";
+import { parseDestination } from "@/lib/parsers";
 
 export type DestinationSearchParams = {
   query?: string;
@@ -34,14 +36,14 @@ export async function getDestinations(params: DestinationSearchParams) {
 
   if (query) {
     where.OR = [
-      { name: { contains: query, mode: "insensitive" } },
-      { location: { contains: query, mode: "insensitive" } },
-      { description: { contains: query, mode: "insensitive" } },
-      { category: { name: { contains: query, mode: "insensitive" } } },
+      { name: { contains: query } },
+      { location: { contains: query } },
+      { description: { contains: query } },
+      { category: { name: { contains: query } } },
     ];
   }
 
-  return prisma.destination.findMany({
+  const destinations = await prisma.destination.findMany({
     where,
     orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
     include: {
@@ -52,10 +54,12 @@ export async function getDestinations(params: DestinationSearchParams) {
       },
     },
   });
+
+  return destinations.map(parseDestination);
 }
 
 export async function getDestinationBySlug(slug: string) {
-  return prisma.destination.findUnique({
+  const destination = await prisma.destination.findUnique({
     where: { slug },
     include: {
       category: true,
@@ -72,4 +76,7 @@ export async function getDestinationBySlug(slug: string) {
       },
     },
   });
+
+  if (!destination) return null;
+  return parseDestination(destination);
 }

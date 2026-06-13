@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { createSlug } from "@/lib/slug";
+import { destinationSchema } from "@/lib/validators/admin";
 
 type DestinationRouteProps = {
   params: Promise<{
@@ -20,4 +22,55 @@ export async function DELETE(_request: Request, { params }: DestinationRouteProp
   await prisma.destination.delete({ where: { id } });
 
   return NextResponse.json({ message: "Destination deleted." });
+}
+
+export async function PATCH(request: Request, { params }: DestinationRouteProps) {
+  const { response } = await requireAdmin();
+
+  if (response) {
+    return response;
+  }
+
+  const { id } = await params;
+  const body = await request.json().catch(() => null);
+  const parsed = destinationSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      { message: parsed.error.issues[0]?.message ?? "Invalid destination data." },
+      { status: 400 },
+    );
+  }
+
+  const destination = await prisma.destination.update({
+    where: { id },
+    data: {
+      name: parsed.data.name,
+      slug: createSlug(parsed.data.name),
+      categoryId: parsed.data.categoryId,
+      description: parsed.data.description,
+      location: parsed.data.location,
+      mapLink: parsed.data.mapLink || null,
+      estimatedBudget: parsed.data.estimatedBudget,
+      bestTimeToVisit: parsed.data.bestTimeToVisit,
+      duration: parsed.data.duration,
+      difficulty: parsed.data.difficulty,
+      localFood: splitLines(parsed.data.localFood),
+      nearbyAttractions: splitLines(parsed.data.nearbyAttractions),
+      transportation: parsed.data.transportation,
+      safetyTips: splitLines(parsed.data.safetyTips),
+      imageUrls: splitLines(parsed.data.imageUrls ?? ""),
+      isFeatured: parsed.data.isFeatured ?? false,
+    },
+  });
+
+  return NextResponse.json({ destination });
+}
+
+function splitLines(value: string) {
+  const arr = value
+    .split(/\r?\n|,/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+  return JSON.stringify(arr);
 }

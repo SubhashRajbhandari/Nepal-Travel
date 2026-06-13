@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { DestinationCard } from "@/components/destination/DestinationCard";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { parseDestination } from "@/lib/parsers";
 
 export default async function SavedDestinationsPage() {
   const session = await getCurrentUser();
@@ -43,7 +44,7 @@ export default async function SavedDestinationsPage() {
       {bookmarks.length ? (
         <section className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {bookmarks.map((bookmark) => (
-            <DestinationCard key={bookmark.id} destination={bookmark.destination} />
+            <DestinationCard key={bookmark.id} destination={parseDestination(bookmark.destination as any) as any} />
           ))}
         </section>
       ) : (

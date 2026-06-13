@@ -1,12 +1,11 @@
 import bcrypt from "bcryptjs";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Difficulty, PrismaClient, Role } from "../lib/generated/prisma/client";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaClient } from "../lib/generated/prisma/client";
 import { createSlug } from "../lib/slug";
 
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL,
+const adapter = new PrismaLibSql({
+  url: process.env.DATABASE_URL || "file:./dev.db",
 });
-
 const prisma = new PrismaClient({ adapter });
 
 const categories = [
@@ -41,7 +40,7 @@ const destinations = [
     name: "Everest Base Camp",
     category: "Trekking Trails",
     location: "Solukhumbu, Koshi Province",
-    difficulty: Difficulty.EXTREME,
+    difficulty: "EXTREME",
     estimatedBudget: 160000,
     bestTimeToVisit: "March to May and September to November",
     duration: "12-14 days",
@@ -58,7 +57,7 @@ const destinations = [
     name: "Annapurna Base Camp",
     category: "Trekking Trails",
     location: "Kaski, Gandaki Province",
-    difficulty: Difficulty.HARD,
+    difficulty: "HARD",
     estimatedBudget: 90000,
     bestTimeToVisit: "March to May and October to November",
     duration: "7-10 days",
@@ -75,7 +74,7 @@ const destinations = [
     name: "Pashupatinath Temple",
     category: "Religious Places",
     location: "Kathmandu, Bagmati Province",
-    difficulty: Difficulty.EASY,
+    difficulty: "EASY",
     estimatedBudget: 3000,
     bestTimeToVisit: "September to April",
     duration: "Half day",
@@ -91,7 +90,7 @@ const destinations = [
     name: "Lumbini",
     category: "Religious Places",
     location: "Rupandehi, Lumbini Province",
-    difficulty: Difficulty.EASY,
+    difficulty: "EASY",
     estimatedBudget: 18000,
     bestTimeToVisit: "October to March",
     duration: "1-2 days",
@@ -107,7 +106,7 @@ const destinations = [
     name: "Pokhara",
     category: "Exotic/Natural Environments",
     location: "Kaski, Gandaki Province",
-    difficulty: Difficulty.EASY,
+    difficulty: "EASY",
     estimatedBudget: 25000,
     bestTimeToVisit: "September to May",
     duration: "2-4 days",
@@ -124,7 +123,7 @@ const destinations = [
     name: "Rara Lake",
     category: "Exotic/Natural Environments",
     location: "Mugu, Karnali Province",
-    difficulty: Difficulty.HARD,
+    difficulty: "HARD",
     estimatedBudget: 70000,
     bestTimeToVisit: "April to June and September to October",
     duration: "5-7 days",
@@ -140,7 +139,7 @@ const destinations = [
     name: "Upper Mustang",
     category: "Motorbike Routes",
     location: "Mustang, Gandaki Province",
-    difficulty: Difficulty.HARD,
+    difficulty: "HARD",
     estimatedBudget: 120000,
     bestTimeToVisit: "March to November",
     duration: "7-10 days",
@@ -157,7 +156,7 @@ const destinations = [
     name: "Chitwan National Park",
     category: "Adventure Points",
     location: "Chitwan, Bagmati Province",
-    difficulty: Difficulty.EASY,
+    difficulty: "EASY",
     estimatedBudget: 28000,
     bestTimeToVisit: "October to March",
     duration: "2-3 days",
@@ -173,7 +172,7 @@ const destinations = [
     name: "Bandipur",
     category: "Cultural Centers",
     location: "Tanahun, Gandaki Province",
-    difficulty: Difficulty.EASY,
+    difficulty: "EASY",
     estimatedBudget: 12000,
     bestTimeToVisit: "September to April",
     duration: "1-2 days",
@@ -189,7 +188,7 @@ const destinations = [
     name: "Manang",
     category: "Trekking Trails",
     location: "Manang, Gandaki Province",
-    difficulty: Difficulty.HARD,
+    difficulty: "HARD",
     estimatedBudget: 85000,
     bestTimeToVisit: "March to May and September to November",
     duration: "6-9 days",
@@ -205,7 +204,7 @@ const destinations = [
     name: "Muktinath",
     category: "Religious Places",
     location: "Mustang, Gandaki Province",
-    difficulty: Difficulty.MODERATE,
+    difficulty: "MODERATE",
     estimatedBudget: 50000,
     bestTimeToVisit: "March to June and September to November",
     duration: "3-5 days",
@@ -221,7 +220,7 @@ const destinations = [
     name: "Nagarkot",
     category: "Exotic/Natural Environments",
     location: "Bhaktapur, Bagmati Province",
-    difficulty: Difficulty.EASY,
+    difficulty: "EASY",
     estimatedBudget: 8000,
     bestTimeToVisit: "October to April",
     duration: "1 day",
@@ -245,7 +244,7 @@ async function main() {
       name: "Admin User",
       email: "admin@nepaltravel.test",
       passwordHash,
-      role: Role.ADMIN,
+      role: "ADMIN",
     },
   });
 
@@ -264,21 +263,30 @@ async function main() {
   const categoryByName = new Map(categoryRows.map((category) => [category.name, category]));
 
   for (const destination of destinations) {
-    const { category: categoryName, ...destinationData } = destination;
+    const { category: categoryName, localFood, nearbyAttractions, safetyTips, imageUrls, ...destinationData } = destination;
     const category = categoryByName.get(categoryName);
 
     if (!category) {
       throw new Error(`Missing category: ${categoryName}`);
     }
 
+    const stringifiedData = {
+      localFood: JSON.stringify(localFood || []),
+      nearbyAttractions: JSON.stringify(nearbyAttractions || []),
+      safetyTips: JSON.stringify(safetyTips || []),
+      imageUrls: JSON.stringify(imageUrls || []),
+    };
+
     await prisma.destination.upsert({
       where: { slug: createSlug(destination.name) },
       update: {
         ...destinationData,
+        ...stringifiedData,
         categoryId: category.id,
       },
       create: {
         ...destinationData,
+        ...stringifiedData,
         slug: createSlug(destination.name),
         categoryId: category.id,
       },

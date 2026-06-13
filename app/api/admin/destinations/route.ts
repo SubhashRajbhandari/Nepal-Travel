@@ -46,8 +46,9 @@ export async function POST(request: Request) {
 }
 
 function splitLines(value: string) {
-  return value
+  const arr = value
     .split(/\r?\n|,/)
     .map((item) => item.trim())
     .filter(Boolean);
+  return JSON.stringify(arr);
 }

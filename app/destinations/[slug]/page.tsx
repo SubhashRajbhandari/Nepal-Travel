@@ -5,6 +5,7 @@ import {
   CalendarDays,
   Clock,
   MapPin,
+  Pencil,
   ShieldCheck,
   Star,
   Utensils,
@@ -63,9 +64,20 @@ export default async function DestinationDetailPage({
         }}
       >
         <div className="mx-auto max-w-6xl px-5 py-16">
-          <Link href="/destinations" className="text-sm font-semibold text-emerald-300">
-            Back to destinations
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/destinations" className="text-sm font-semibold text-emerald-300">
+              Back to destinations
+            </Link>
+            {session?.user?.role === "ADMIN" ? (
+              <Link
+                href={`/admin/destinations/${destination.id}`}
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+              >
+                <Pencil className="h-4 w-4" aria-hidden="true" />
+                Edit Destination
+              </Link>
+            ) : null}
+          </div>
           <div className="mt-6 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-emerald-300">

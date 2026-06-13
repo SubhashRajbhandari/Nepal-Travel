@@ -11,9 +11,27 @@ type DestinationFormProps = {
     id: string;
     name: string;
   }[];
+  initialData?: {
+    id: string;
+    name: string;
+    categoryId: string;
+    description: string;
+    location: string;
+    mapLink: string | null;
+    estimatedBudget: number;
+    bestTimeToVisit: string;
+    duration: string;
+    difficulty: string;
+    localFood: string[];
+    nearbyAttractions: string[];
+    transportation: string;
+    safetyTips: string[];
+    imageUrls: string[];
+    isFeatured: boolean;
+  };
 };
 
-export function DestinationForm({ categories }: DestinationFormProps) {
+export function DestinationForm({ categories, initialData }: DestinationFormProps) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,8 +42,13 @@ export function DestinationForm({ categories }: DestinationFormProps) {
     setIsSubmitting(true);
 
     const formData = new FormData(event.currentTarget);
-    const response = await fetch("/api/admin/destinations", {
-      method: "POST",
+    const url = initialData 
+      ? `/api/admin/destinations/${initialData.id}` 
+      : "/api/admin/destinations";
+    const method = initialData ? "PATCH" : "POST";
+
+    const response = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name: formData.get("name"),
@@ -63,12 +86,13 @@ export function DestinationForm({ categories }: DestinationFormProps) {
   return (
     <form onSubmit={handleSubmit} className="rounded-xl border border-slate-200 bg-white p-5">
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField name="name" label="Name" required />
-        <TextField name="location" label="Location" required />
+        <TextField name="name" label="Name" defaultValue={initialData?.name} required />
+        <TextField name="location" label="Location" defaultValue={initialData?.location} required />
         <label>
           <span className="text-sm font-medium text-slate-700">Category</span>
           <select
             name="categoryId"
+            defaultValue={initialData?.categoryId}
             required
             className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
           >
@@ -83,6 +107,7 @@ export function DestinationForm({ categories }: DestinationFormProps) {
           <span className="text-sm font-medium text-slate-700">Difficulty</span>
           <select
             name="difficulty"
+            defaultValue={initialData?.difficulty}
             className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
           >
             {difficulties.map((difficulty) => (
@@ -92,21 +117,21 @@ export function DestinationForm({ categories }: DestinationFormProps) {
             ))}
           </select>
         </label>
-        <TextField name="estimatedBudget" label="Estimated budget NPR" type="number" min={0} required />
-        <TextField name="duration" label="Duration" required />
-        <TextField name="bestTimeToVisit" label="Best time to visit" required />
-        <TextField name="mapLink" label="Map link" />
+        <TextField name="estimatedBudget" label="Estimated budget NPR" type="number" min={0} defaultValue={initialData?.estimatedBudget} required />
+        <TextField name="duration" label="Duration" defaultValue={initialData?.duration} required />
+        <TextField name="bestTimeToVisit" label="Best time to visit" defaultValue={initialData?.bestTimeToVisit} required />
+        <TextField name="mapLink" label="Map link" defaultValue={initialData?.mapLink ?? ""} />
       </div>
 
-      <TextArea name="description" label="Description" required />
-      <TextArea name="localFood" label="Local food points" required />
-      <TextArea name="nearbyAttractions" label="Nearby attractions" required />
-      <TextArea name="transportation" label="Transportation details" required />
-      <TextArea name="safetyTips" label="Safety tips" required />
-      <TextArea name="imageUrls" label="Image URLs or paths" />
+      <TextArea name="description" label="Description" defaultValue={initialData?.description} required />
+      <TextArea name="localFood" label="Local food points" defaultValue={initialData?.localFood.join(", ")} required />
+      <TextArea name="nearbyAttractions" label="Nearby attractions" defaultValue={initialData?.nearbyAttractions.join(", ")} required />
+      <TextArea name="transportation" label="Transportation details" defaultValue={initialData?.transportation} required />
+      <TextArea name="safetyTips" label="Safety tips" defaultValue={initialData?.safetyTips.join(", ")} required />
+      <TextArea name="imageUrls" label="Image URLs or paths" defaultValue={initialData?.imageUrls.join(", ")} />
 
       <label className="mt-4 flex items-center gap-2 text-sm font-medium text-slate-700">
-        <input name="isFeatured" type="checkbox" className="h-4 w-4 rounded border-slate-300" />
+        <input name="isFeatured" type="checkbox" defaultChecked={initialData?.isFeatured} className="h-4 w-4 rounded border-slate-300" />
         Featured destination
       </label>
 
@@ -128,12 +153,14 @@ function TextField({
   type = "text",
   required = false,
   min,
+  defaultValue,
 }: {
   name: string;
   label: string;
   type?: string;
   required?: boolean;
   min?: number;
+  defaultValue?: string | number;
 }) {
   return (
     <label>
@@ -143,6 +170,7 @@ function TextField({
         type={type}
         required={required}
         min={min}
+        defaultValue={defaultValue}
         className="mt-2 h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
       />
     </label>
@@ -153,10 +181,12 @@ function TextArea({
   name,
   label,
   required = false,
+  defaultValue,
 }: {
   name: string;
   label: string;
   required?: boolean;
+  defaultValue?: string;
 }) {
   return (
     <label className="mt-4 block">
@@ -164,6 +194,7 @@ function TextArea({
       <textarea
         name={name}
         required={required}
+        defaultValue={defaultValue}
         rows={3}
         className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100"
       />

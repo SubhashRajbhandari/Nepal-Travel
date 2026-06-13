@@ -1,5 +1,6 @@
 import OpenAI from "openai";
-import type { Destination, Difficulty } from "@/lib/generated/prisma/client";
+import { Destination } from "@/lib/generated/prisma/client";
+import { Difficulty } from "@/lib/types";
 import { formatDifficulty } from "@/lib/format";
 
 export type ItineraryInput = {

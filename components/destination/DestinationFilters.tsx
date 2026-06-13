@@ -1,5 +1,5 @@
 import { Search } from "lucide-react";
-import { Difficulty } from "@/lib/generated/prisma/client";
+import { Difficulty } from "@/lib/types";
 import { formatDifficulty } from "@/lib/format";
 
 type DestinationFiltersProps = {

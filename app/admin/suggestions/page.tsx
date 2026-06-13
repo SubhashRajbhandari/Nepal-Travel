@@ -63,7 +63,7 @@ export default async function AdminSuggestionsPage() {
               </div>
               <span
                 className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-                  statusStyles[suggestion.status]
+                  statusStyles[suggestion.status as keyof typeof statusStyles]
                 }`}
               >
                 {formatDifficulty(suggestion.status)}

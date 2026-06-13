@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, MapPin, WalletCards } from "lucide-react";
-import type { Difficulty } from "@/lib/generated/prisma/client";
+import { Clock, MapPin, Star, WalletCards } from "lucide-react";
+import { Difficulty } from "@/lib/types";
 import { getDestinationImage } from "@/lib/destination-images";
 import { formatDifficulty, formatNepaliCurrency } from "@/lib/format";
 

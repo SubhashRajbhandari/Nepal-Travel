@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Difficulty } from "@/lib/generated/prisma/client";
+import { Difficulty } from "@/lib/types";
 
 export const destinationSuggestionSchema = z.object({
   name: z.string().trim().min(2, "Destination name is required."),

@@ -81,7 +81,7 @@ export default async function AdminUsersPage() {
                   <td className="px-4 py-4">
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        statusStyles[user.status]
+                        statusStyles[user.status as keyof typeof statusStyles]
                       }`}
                     >
                       {formatDifficulty(user.status)}
